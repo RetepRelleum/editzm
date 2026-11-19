@@ -1,0 +1,20 @@
+
+{
+    "python.terminal.useEnvFile": true,
+
+
+    "python.envFile": "${workspaceFolder}/.env",
+    "python.analysis.extraPaths": [
+        "/usr/share/qgis/python",
+        "/usr/lib/python3/dist-packages"
+    ],
+    "python.autoComplete.extraPaths": [
+        "/usr/share/qgis/python",
+        "/usr/lib/python3/dist-packages"
+    ],
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "makefile.configureOnOpen": false
+
+
+
+}
