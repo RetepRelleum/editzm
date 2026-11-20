@@ -1,0 +1,14 @@
+test/ 
+.github/ 
+.venv/ 
+.vscode
+help/ 
+i18n/ 
+.env 
+.pre-commit-config.yaml 
+make.sh 
+makefile 
+pb-tool.cfg 
+pyproject.toml 
+README.md 
+README.txt 
