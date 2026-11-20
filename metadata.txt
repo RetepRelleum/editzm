@@ -14,8 +14,8 @@ email=retpe.relleum@bluewin.ch
 
 about=retpe.relleum@bluewin.ch
 
-tracker=https://github.com/RetepRelleum/flutwelle
-repository=https://github.com/RetepRelleum/flutwelle
+tracker=https://github.com/RetepRelleum/editzm
+repository=https://github.com/RetepRelleum/editzm
 license=GNU GPL v2
 # End of mandatory metadata
 
@@ -28,7 +28,7 @@ hasProcessingProvider=no
 # Tags are comma separated with spaces allowed
 tags=python
 
-homepage=https://github.com/RetepRelleum/flutwelle
+homepage=https://github.com/RetepRelleum/editzm
 category=Plugins
 icon=icon.png
 # experimental flag
