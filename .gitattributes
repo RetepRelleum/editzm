@@ -12,7 +12,7 @@ test/ export-ignore
 .github/workflows/ export-ignore
 .github/ export-ignore
 .venv/ export-ignore
-.vscode/ export-ignore
+.vscode export-ignore
 help/ export-ignore
 i18n/ export-ignore
 .env export-ignore
