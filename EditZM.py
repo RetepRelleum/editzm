@@ -217,7 +217,7 @@ class EditZM:
                 self.dlg.show()
                 result = self.dlg.exec()
                 if result==1:
-                    geomx=self.dlg.geomMupe.getGeometry()
+                    geomx=self.dlg.geomMupe.getGeometry()  
                     layer.startEditing()
                     layer.changeGeometry(feature.id(), geomx)
                     layer.commitChanges()
