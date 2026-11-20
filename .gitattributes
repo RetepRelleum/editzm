@@ -10,6 +10,7 @@
 # rather than avoiding assert in tests.
 test/ export-ignore
 .github/workflows/ export-ignore
+.github/ export-ignore
 .venv/ export-ignore
 .vscode/ export-ignore
 help/ export-ignore
