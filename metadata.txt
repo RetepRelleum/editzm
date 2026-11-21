@@ -8,7 +8,7 @@ name=EditZM
 qgisMinimumVersion=4.0
 qgisMaximumVersion=4.99
 description=Edit ZM is an editor that can be used to define the Z and M values of points, lines and polygons. It is possible to set this constant, linear and in accordance with a digital evolutionary model. The software is also compatible with multiple objects.
-version=0.21
+version=0.221
 author=retep.relleum@bluewin.ch
 email=retep.relleum@bluewin.ch
 

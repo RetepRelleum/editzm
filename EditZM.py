@@ -22,11 +22,11 @@
  ***************************************************************************/
 """
 from qgis.PyQt.QtCore import QLocale, QTranslator, QCoreApplication
-from qgis.core import Qgis,QgsSettings, QgsVectorLayer ,QgsProject, QgsRasterLayer,QgsLayerTreeLayer
+from qgis.core import Qgis, QgsSettings, QgsVectorLayer, QgsProject, QgsRasterLayer, QgsLayerTreeLayer
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
 from qgis.utils import iface
-from PyQt6.QtWidgets import QMessageBox 
+from PyQt6.QtWidgets import QMessageBox
 
 # Import the code for the dialog
 from .EditZM_dialog import DialogXYZ
@@ -50,7 +50,8 @@ class EditZM:
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
         # initialize locale
-        locale = QgsSettings().value('locale/userLocale', QLocale().name())[0:2]
+        locale = QgsSettings().value(
+            'locale/userLocale', QLocale().name())[0:2]
         locale_path = os.path.join(
             self.plugin_dir,
             'i18n',
@@ -82,18 +83,17 @@ class EditZM:
         """
         return QCoreApplication.translate('EditZM', message)
 
-
     def add_action(
-        self,
-        icon_path,
-        text,
-        callback,
-        enabled_flag=True,
-        add_to_menu=True,
-        add_to_toolbar=True,
-        status_tip=None,
-        whats_this=None,
-        parent=None):
+            self,
+            icon_path,
+            text,
+            callback,
+            enabled_flag=True,
+            add_to_menu=True,
+            add_to_toolbar=True,
+            status_tip=None,
+            whats_this=None,
+            parent=None):
         """Add a toolbar icon to the toolbar.
 
         :param icon_path: Path to the icon for this action. Can be a resource
@@ -170,7 +170,6 @@ class EditZM:
         # will be set False in run()
         self.first_start = True
 
-
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
@@ -179,61 +178,57 @@ class EditZM:
                 action)
             self.iface.removeToolBarIcon(action)
 
-
     def run(self):
         """Run method that performs all the real work"""
 
         # Create the dialog with elements (after translation) and keep reference
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
 
-
         layer = iface.activeLayer()
-        dx=0
-        dy=0
 
-        if isinstance(layer, QgsVectorLayer) :
+        if isinstance(layer, QgsVectorLayer):
             # Retrieve all selected features as a list
             selected_features = layer.selectedFeatures()
-            if selected_features!=[] :
-                feature=selected_features[0]
+            if selected_features != []:
+                feature = selected_features[0]
                 geom = feature.geometry()
                 layerRaster = QgsProject.instance().mapLayersByName("Raster")
-                if len(layerRaster)==0:
-                        file_path=QgsSettings().value("EditZM/TiffFile", None)
-                        layerRaster=[]
-                        rlayer = QgsRasterLayer(file_path, "Raster")
-                        QgsProject.instance().addMapLayer(rlayer, False)
-                        root = QgsProject.instance().layerTreeRoot()
-                        root.insertChildNode(-1, QgsLayerTreeLayer(rlayer))
-                        layerRaster.append(rlayer)
-                self.geomMupe=GeomMupe(geom.asWkt(),layerRaster)
+                if len(layerRaster) == 0:
+                    file_path = QgsSettings().value("EditZM/TiffFile", None)
+                    layerRaster = []
+                    rlayer = QgsRasterLayer(file_path, "Raster")
+                    QgsProject.instance().addMapLayer(rlayer, False)
+                    root = QgsProject.instance().layerTreeRoot()
+                    root.insertChildNode(-1, QgsLayerTreeLayer(rlayer))
+                    layerRaster.append(rlayer)
+                self.geomMupe = GeomMupe(geom.asWkt(), layerRaster)
                 if self.first_start:
                     self.dlg = DialogXYZ(self.geomMupe)
                     self.first_start = False
                 else:
-                    self.dlg.geomMupe=self.geomMupe
+                    self.dlg.geomMupe = self.geomMupe
                     self.dlg.addData()
 
                 self.dlg.show()
                 result = self.dlg.exec()
-                if result==1:
-                    geomx=self.dlg.geomMupe.getGeometry()  
+                if result == 1:
+                    geomx = self.dlg.geomMupe.getGeometry()
                     layer.startEditing()
                     layer.changeGeometry(feature.id(), geomx)
                     layer.commitChanges()
 
                 self.dlg.rbstart.reset(Qgis.GeometryType.Point)
                 self.dlg.rbend.reset(Qgis.GeometryType.Point)
-                    
 
             else:
-                QMessageBox.information(None, "Hinweis EditZM", "----------------Nichts selektiert.----------------")
+                QMessageBox.information(
+                    None, "Hinweis EditZM", "----------------Nichts selektiert.----------------")
         else:
-            QMessageBox.information(None, "Hinweis EditZM", "----------------Nichts selektiert.----------------")
+            QMessageBox.information(
+                None, "Hinweis EditZM", "----------------Nichts selektiert.----------------")
 
         # show the dialog
-  
+
         # Run the dialog event loop
-    
+
         # See if OK was pressed
-        

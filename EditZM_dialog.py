@@ -308,7 +308,7 @@ class DialogXYZ(QDialog):
         # Opens a native file dialog to select an existing file
         self.file_path, _ = QFileDialog.getOpenFileName(
             self,
-            "Select DEM File",
+            self.tr("Select DEM File"),
             "",  # Starting directory (empty = default/last used)
             "Images (*.tif *.tiff *.hgt *.HGT *.asc *.ASC *.img *.IMG *.dem *.DEM .xyz .XMZ ) ",
         )
@@ -434,7 +434,7 @@ class DialogXYZ(QDialog):
                                ].y[self.spinBoxStart.value()])
             z.append(self.data[self.spinBoxPart.value()
                                ].z[self.spinBoxStart.value()])
-            self.canvas.axes.scatter3D(x, y, z, label='Start', color='r')
+            self.canvas.axes.scatter3D(x, y, z, label='Start', color='g')
 
             # Punkt hinzufügen (in Kartenkoordinaten)
             punkt = QgsPointXY(self.data[self.spinBoxPart.value()].x[self.spinBoxEnd.value(
@@ -450,7 +450,7 @@ class DialogXYZ(QDialog):
                                ].y[self.spinBoxEnd.value()])
             z.append(self.data[self.spinBoxPart.value()
                                ].z[self.spinBoxEnd.value()])
-            self.canvas.axes.scatter3D(x, y, z, label='End', color='b')
+            self.canvas.axes.scatter3D(x, y, z, label='End', color='r')
             x = []
             y = []
             z = []
@@ -460,7 +460,7 @@ class DialogXYZ(QDialog):
                                ].y[self.spinBoxStart.value()])
             z.append(self.data[self.spinBoxPart.value()
                                ].m[self.spinBoxStart.value()])
-            self.canvas.axes.scatter3D(x, y, z, color='r')
+            self.canvas.axes.scatter3D(x, y, z, color='g')
             x = []
             y = []
             z = []
@@ -470,7 +470,7 @@ class DialogXYZ(QDialog):
                                ].y[self.spinBoxEnd.value()])
             z.append(self.data[self.spinBoxPart.value()
                                ].m[self.spinBoxEnd.value()])
-            self.canvas.axes.scatter3D(x, y, z, color='b')
+            self.canvas.axes.scatter3D(x, y, z, color='r')
 
         if self.check_normal.isChecked():
             self.canvas.axes.plot_wireframe(self.X, self.Y, self.Z,  color='grey',
