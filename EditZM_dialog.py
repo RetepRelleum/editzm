@@ -67,12 +67,12 @@ class DialogXYZ(QDialog):
         # RubberBand mit Point-Geometrie initialisieren
         self.rbstart  = QgsRubberBand(self.canvas, Qgis.GeometryType.Point)
         self.rbstart.setColor(QColor(0, 255, 0, 180))  # Rot mit leichter Transparenz
-        self.rbstart.setIcon(QgsRubberBand.ICON_CIRCLE)  # Alternativen: ICON_CROSS, ICON_X, ICON_BOX, ICON_DIAMOND, ICON_SVG
+        self.rbstart.setIcon(QgsRubberBand.IconType.ICON_CIRCLE)  # Alternativen: ICON_CROSS, ICON_X, ICON_BOX, ICON_DIAMOND, ICON_SVG
         self.rbstart.setIconSize(12)
 
         self.rbend = QgsRubberBand(self.canvas, Qgis.GeometryType.Point)
         self.rbend.setColor(QColor(255, 0, 0, 180))  # Rot mit leichter Transparenz
-        self.rbend.setIcon(QgsRubberBand.ICON_CIRCLE)  # Alternativen: ICON_CROSS, ICON_X, ICON_BOX, ICON_DIAMOND, ICON_SVG
+        self.rbend.setIcon(QgsRubberBand.IconType.ICON_CIRCLE)  # Alternativen: ICON_CROSS, ICON_X, ICON_BOX, ICON_DIAMOND, ICON_SVG
         self.rbend.setIconSize(12)
 
         self.geomMupe=geomMupe
