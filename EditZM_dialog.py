@@ -26,7 +26,22 @@ from .GeomMupe import GeomMupe
 import numpy as np
 
 
-from PyQt6.QtWidgets import QLineEdit,QFileDialog,QGroupBox,QCheckBox,QDoubleSpinBox, QGridLayout, QLabel, QHBoxLayout,QVBoxLayout,QWidget, QDialog, QTabWidget, QSpinBox,QLabel,QDialogButtonBox,QPushButton
+from PyQt6.QtWidgets import (
+    QLineEdit,
+    QFileDialog,
+    QGroupBox,
+    QCheckBox,
+    QDoubleSpinBox,
+    QGridLayout,
+    QLabel,
+    QHBoxLayout,
+    QVBoxLayout,
+    QWidget,
+    QDialog,
+    QSpinBox,
+    QDialogButtonBox,
+    QPushButton,
+)
 from PyQt6.QtCore import Qt
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -36,23 +51,23 @@ from qgis.PyQt.QtGui import QColor
 from qgis.gui import QgsRubberBand
 
 
-
 class FilePickerWidget(QWidget):
     def __init__(self):
         super().__init__()
         layout = QHBoxLayout(self)
         self.filename_input = QLineEdit()
-        self.filename_input.setPlaceholderText("Select or enter a file path...")
-        self.file_path=QgsSettings().value("EditZM/TiffFile", None)
+        self.filename_input.setPlaceholderText(
+            "Select or enter a file path...")
+        self.file_path = QgsSettings().value("EditZM/TiffFile", None)
         self.filename_input.setText(self.file_path)
         self.browse_button = QPushButton(":")
         layout.addWidget(self.filename_input)
         layout.addWidget(self.browse_button)
 
 
-
 class Mpl3DCanvas(FigureCanvas):
     """Ein Canvas, der automatisch ein 3D-Matplotlib-Diagramm initialisiert."""
+
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         # Eine Matplotlib-Figur erstellen
         fig = Figure(figsize=(width, height), dpi=dpi)
@@ -60,50 +75,52 @@ class Mpl3DCanvas(FigureCanvas):
         self.axes = fig.add_subplot(111, projection='3d')
         super().__init__(fig)
 
+
 class DialogXYZ(QDialog):
-    def __init__(self,geomMupe:GeomMupe):
+    def __init__(self, geomMupe: GeomMupe):
         super().__init__()
         self.canvas = iface.mapCanvas()
         # RubberBand mit Point-Geometrie initialisieren
-        self.rbstart  = QgsRubberBand(self.canvas, Qgis.GeometryType.Point)
-        self.rbstart.setColor(QColor(0, 255, 0, 180))  # Rot mit leichter Transparenz
-        self.rbstart.setIcon(QgsRubberBand.IconType.ICON_CIRCLE)  # Alternativen: ICON_CROSS, ICON_X, ICON_BOX, ICON_DIAMOND, ICON_SVG
+        self.rbstart = QgsRubberBand(self.canvas, Qgis.GeometryType.Point)
+        # Rot mit leichter Transparenz
+        self.rbstart.setColor(QColor(0, 255, 0, 180))
+        # Alternativen: ICON_CROSS, ICON_X, ICON_BOX, ICON_DIAMOND, ICON_SVG
+        self.rbstart.setIcon(QgsRubberBand.IconType.ICON_CIRCLE)
         self.rbstart.setIconSize(12)
 
         self.rbend = QgsRubberBand(self.canvas, Qgis.GeometryType.Point)
-        self.rbend.setColor(QColor(255, 0, 0, 180))  # Rot mit leichter Transparenz
-        self.rbend.setIcon(QgsRubberBand.IconType.ICON_CIRCLE)  # Alternativen: ICON_CROSS, ICON_X, ICON_BOX, ICON_DIAMOND, ICON_SVG
+        # Rot mit leichter Transparenz
+        self.rbend.setColor(QColor(255, 0, 0, 180))
+        # Alternativen: ICON_CROSS, ICON_X, ICON_BOX, ICON_DIAMOND, ICON_SVG
+        self.rbend.setIcon(QgsRubberBand.IconType.ICON_CIRCLE)
         self.rbend.setIconSize(12)
 
-        self.geomMupe=geomMupe
+        self.geomMupe = geomMupe
         self.setWindowTitle("Edit Z M")
-        self.data=self.geomMupe.getQseries()
-        self.vb =QVBoxLayout()
+        self.data = self.geomMupe.getQseries()
+        self.vb = QVBoxLayout()
         self.vb.addWidget(self.part())
         self.vb.addWidget(self.konstant())
-        self.vb.addWidget(self.linear())     
-        self.vb.addWidget(self.dem())    
-        self.vb.addWidget(self.safe()) 
+        self.vb.addWidget(self.linear())
+        self.vb.addWidget(self.dem())
+        self.vb.addWidget(self.safe())
         self.layout = QGridLayout()
-        self.layout.addWidget(self.d3(),0,0)
-        self.layout.addLayout(self.vb,0,1) 
-        self.boxLayout=QVBoxLayout()
+        self.layout.addWidget(self.d3(), 0, 0)
+        self.layout.addLayout(self.vb, 0, 1)
+        self.boxLayout = QVBoxLayout()
         self.boxLayout.addLayout(self.layout)
         self.setLayout(self.boxLayout)
         self.on_spinBox_part(0)
-        if self.geomMupe.raster==None:
+        if self.geomMupe.raster is None:
             self.open_file_dialog()
-        
-
-
 
     def safe(self):
-        b=QVBoxLayout()
-        QBtn = (QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
+        b = QVBoxLayout()
+        QBtn = (QDialogButtonBox.StandardButton.Save |
+                QDialogButtonBox.StandardButton.Cancel)
         self.buttonBox = QDialogButtonBox(QBtn)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
-   
 
         b.addWidget(self.buttonBox)
         tab = QGroupBox("Safe")
@@ -113,11 +130,11 @@ class DialogXYZ(QDialog):
 
     def part(self):
         tab = QGroupBox("Part")
-        v=QVBoxLayout()
-        b=QHBoxLayout()
-        self.spinBoxPart=QSpinBox(minimum =0,maximum=len(self.data)-1)
+        v = QVBoxLayout()
+        b = QHBoxLayout()
+        self.spinBoxPart = QSpinBox(minimum=0, maximum=len(self.data)-1)
         self.spinBoxPart.valueChanged.connect(self.on_spinBox_part)
-        self.labelLaengeStartBisStop=QLabel('0.0')
+        self.labelLaengeStartBisStop = QLabel('0.0')
         b.addWidget(QLabel('Part'))
         b.addWidget(self.spinBoxPart)
         v.addLayout(b)
@@ -132,81 +149,85 @@ class DialogXYZ(QDialog):
         layout.addWidget(self.spinBoxEnd)
 
         v.addLayout(layout)
-        layout4=QHBoxLayout()
-        layout4.addWidget(QLabel('Länge')) 
-        layout4.addWidget(self.labelLaengeStartBisStop)  
-        v.addLayout(layout4) 
+        layout4 = QHBoxLayout()
+        layout4.addWidget(QLabel('Länge'))
+        layout4.addWidget(self.labelLaengeStartBisStop)
+        v.addLayout(layout4)
         tab.setLayout(v)
         tab.setMaximumWidth(400)
         return tab
 
-    def on_spinBox_part(self,value):
-        dat=self.data[value]
+    def on_spinBox_part(self, value):
+        dat = self.data[value]
         self.spinBoxPart.setValue(value)
-        self.spinBoxPart.setRange(0,len(self.data)-1)
-        self.spinBoxStart.setRange(0,len(dat.x)-1)
+        self.spinBoxPart.setRange(0, len(self.data)-1)
+        self.spinBoxStart.setRange(0, len(dat.x)-1)
         self.spinBoxStart.setValue(0)
-        self.spinBoxEnd.setRange(0,len(dat.x)-1)
+        self.spinBoxEnd.setRange(0, len(dat.x)-1)
         self.spinBoxEnd.setValue(len(dat.x)-1)
         self.spinBoxKonstant.setValue((np.mean(dat.m)+np.mean(dat.z))/2)
         self.setPlotData()
-  
+
     def konstant(self):
-        dat=self.data[self.spinBoxPart.value()]
-        self.spinBoxKonstant = QDoubleSpinBox(minimum =-100,maximum=10000,value=(np.mean(dat.z)+np.mean(dat.m))/2)
-        self.pushButtonKonstZ=QPushButton('Konstant Z')
+        dat = self.data[self.spinBoxPart.value()]
+        self.spinBoxKonstant = QDoubleSpinBox(
+            minimum=-100, maximum=10000, value=(np.mean(dat.z)+np.mean(dat.m))/2)
+        self.pushButtonKonstZ = QPushButton('Konstant Z')
         self.pushButtonKonstZ.clicked.connect(self.on_ButtonKonstZ)
-        self.pushButtonKonstM=QPushButton('Konstant M')
+        self.pushButtonKonstM = QPushButton('Konstant M')
         self.pushButtonKonstM.clicked.connect(self.on_ButtonKonstM)
-        layoutH=QHBoxLayout()
+        layoutH = QHBoxLayout()
         layoutH.addWidget(QLabel('Val'))
         layoutH.addWidget(self.spinBoxKonstant)
-        layout=QHBoxLayout()
+        layout = QHBoxLayout()
         layout.addWidget(self.pushButtonKonstZ)
         layout.addWidget(self.pushButtonKonstM)
-        layoutV=QVBoxLayout()
+        layoutV = QVBoxLayout()
         layoutV.addLayout(layoutH)
         layoutV.addLayout(layout)
         tab = QGroupBox("Konstant")
         tab.setLayout(layoutV)
         tab.setMaximumWidth(400)
         return tab
-    
+
     def on_ButtonKonstZ(self):
-        d=self.data[self.spinBoxPart.value()]
-        ran=range(self.spinBoxStart.value(),self.spinBoxEnd.value()+1)
+        d = self.data[self.spinBoxPart.value()]
+        ran = range(self.spinBoxStart.value(), self.spinBoxEnd.value()+1)
         for x in ran:
-            self.geomMupe.setValZ(d.a,d.b,d.c,x,self.spinBoxKonstant.value())
-        self.data=self.geomMupe.getQseries()
+            self.geomMupe.setValZ(
+                d.a, d.b, d.c, x, self.spinBoxKonstant.value())
+        self.data = self.geomMupe.getQseries()
         self.setPlotData()
 
     def on_ButtonKonstM(self):
-        d=self.data[self.spinBoxPart.value()]
-        ran=range(self.spinBoxStart.value(),self.spinBoxEnd.value()+1)
+        d = self.data[self.spinBoxPart.value()]
+        ran = range(self.spinBoxStart.value(), self.spinBoxEnd.value()+1)
         for x in ran:
-            self.geomMupe.setValM(d.a,d.b,d.c,x,self.spinBoxKonstant.value())
-        self.data=self.geomMupe.getQseries()
+            self.geomMupe.setValM(
+                d.a, d.b, d.c, x, self.spinBoxKonstant.value())
+        self.data = self.geomMupe.getQseries()
         self.setPlotData()
 
     def linear(self):
-        self.spinBoxZvalS = QDoubleSpinBox(minimum =-100,maximum=10000,value=1500)
-        self.spinBoxZvalE = QDoubleSpinBox(minimum =-100,maximum=10000,value=1500)
+        self.spinBoxZvalS = QDoubleSpinBox(
+            minimum=-100, maximum=10000, value=1500)
+        self.spinBoxZvalE = QDoubleSpinBox(
+            minimum=-100, maximum=10000, value=1500)
         layout2 = QHBoxLayout()
         layout2.addWidget(QLabel('Val Start'))
         layout2.addWidget(self.spinBoxZvalS)
         layout2.addWidget(QLabel('Val Stop'))
         layout2.addWidget(self.spinBoxZvalE)
 
-        layout3=QHBoxLayout()
-        self.qPushButton=QPushButton('Linear Z')
+        layout3 = QHBoxLayout()
+        self.qPushButton = QPushButton('Linear Z')
         self.qPushButton.clicked.connect(self.on_ButtonLiearZ)
-        self.qPushButtonM=QPushButton('Linear M')
+        self.qPushButtonM = QPushButton('Linear M')
         self.qPushButtonM.clicked.connect(self.on_ButtonLiearM)
         layout3.addWidget(self.qPushButton)
         layout3.addWidget(self.qPushButtonM)
 
-     
-        layout1=QVBoxLayout()
+        layout1 = QVBoxLayout()
         layout1.addLayout(layout2)
         layout1.addLayout(layout3)
         tab = QGroupBox("Linear")
@@ -216,54 +237,54 @@ class DialogXYZ(QDialog):
 
     def on_ButtonLiearZ(self):
         self.on_button_liear_clicked('Z')
-        
+
     def on_ButtonLiearM(self):
         self.on_button_liear_clicked('M')
 
-    def on_button_liear_clicked(self,zm):
+    def on_button_liear_clicked(self, zm):
 
-        d=self.data[self.spinBoxPart.value()]
-        l=float(self.labelLaengeStartBisStop.text())
-        p1=self.spinBoxStart.value()
-        p2=self.spinBoxEnd.value()
-        h1=self.spinBoxZvalS.value()
-        h2=self.spinBoxZvalE.value()
-        dh=(h2-h1)/l
+        d = self.data[self.spinBoxPart.value()]
+        laenge = float(self.labelLaengeStartBisStop.text())
+        p1 = self.spinBoxStart.value()
+        p2 = self.spinBoxEnd.value()
+        h1 = self.spinBoxZvalS.value()
+        h2 = self.spinBoxZvalE.value()
+        dh = (h2-h1)/laenge
 
-        lenr=0
-        if zm=='Z':
-            self.geomMupe.setValZ(d.a,d.b,d.c,p1,h1)
-            self.geomMupe.setValZ(d.a,d.b,d.c,p2,h2)
+        lenr = 0
+        if zm == 'Z':
+            self.geomMupe.setValZ(d.a, d.b, d.c, p1, h1)
+            self.geomMupe.setValZ(d.a, d.b, d.c, p2, h2)
         else:
-            self.geomMupe.setValM(d.a,d.b,d.c,p1,h1)  
-            self.geomMupe.setValM(d.a,d.b,d.c,p2,h2)
-        xo=range(p1,p2)   
+            self.geomMupe.setValM(d.a, d.b, d.c, p1, h1)
+            self.geomMupe.setValM(d.a, d.b, d.c, p2, h2)
+        xo = range(p1, p2)
         for n in xo:
-            x1=self.geomMupe.getValX(d.a,d.b,d.c,n)   
-            x2=self.geomMupe.getValX(d.a,d.b,d.c,n+1)  
-            y1=self.geomMupe.getValY(d.a,d.b,d.c,n)   
-            y2=self.geomMupe.getValY(d.a,d.b,d.c,n+1)   
+            x1 = self.geomMupe.getValX(d.a, d.b, d.c, n)
+            x2 = self.geomMupe.getValX(d.a, d.b, d.c, n+1)
+            y1 = self.geomMupe.getValY(d.a, d.b, d.c, n)
+            y2 = self.geomMupe.getValY(d.a, d.b, d.c, n+1)
             lenr = lenr + ((x2-x1)**2+(y2-y1)**2)**0.5
-            if zm=='Z':
-                self.geomMupe.setValZ(d.a,d.b,d.c,n,h1+dh*lenr)
+            if zm == 'Z':
+                self.geomMupe.setValZ(d.a, d.b, d.c, n, h1+dh*lenr)
             else:
-                self.geomMupe.setValM(d.a,d.b,d.c,n,h1+dh*lenr)   
-        self.data=self.geomMupe.getQseries()
+                self.geomMupe.setValM(d.a, d.b, d.c, n, h1+dh*lenr)
+        self.data = self.geomMupe.getQseries()
         self.setPlotData()
 
-    def dem(self): 
-        self.qPushButtonDemZ=QPushButton('Dem Z')
+    def dem(self):
+        self.qPushButtonDemZ = QPushButton('Dem Z')
         self.qPushButtonDemZ.clicked.connect(self.on_button_demZ_clicked)
-        self.qPushButtonDemM=QPushButton('Dem M')
+        self.qPushButtonDemM = QPushButton('Dem M')
         self.qPushButtonDemM.clicked.connect(self.on_button_demM_clicked)
-        self.spinBoxDemZ = QDoubleSpinBox(minimum =-1000,maximum=1000,value=0)
-        self.spinBoxDemM = QDoubleSpinBox(minimum =-1000,maximum=1000,value=0)
+        self.spinBoxDemZ = QDoubleSpinBox(minimum=-1000, maximum=1000, value=0)
+        self.spinBoxDemM = QDoubleSpinBox(minimum=-1000, maximum=1000, value=0)
         self.check_normal = QCheckBox("DEM")
-        self.check_normal.setChecked(False) 
+        self.check_normal.setChecked(False)
         self.check_normal.checkStateChanged.connect(self.on_state_changed)
-        layout1=QHBoxLayout()
-        layout2=QHBoxLayout()
-        layout3=QHBoxLayout()
+        layout1 = QHBoxLayout()
+        layout2 = QHBoxLayout()
+        layout3 = QHBoxLayout()
         self.fileNameTiff = FilePickerWidget()
         self.fileNameTiff.browse_button.clicked.connect(self.open_file_dialog)
         layout = QVBoxLayout()
@@ -295,69 +316,74 @@ class DialogXYZ(QDialog):
         # Update the text field if the user didn't cancel
         if self.file_path:
             self.fileNameTiff.filename_input.setText(self.file_path)
-            self.geomMupe.raster=iface.addRasterLayer(self.file_path,"Raster")
+            self.geomMupe.raster = iface.addRasterLayer(
+                self.file_path, "Raster")
         QgsSettings().setValue("EditZM/TiffFile", self.file_path)
 
-    def on_state_changed(self,state: Qt.CheckState):
-        xmin=999999999
-        xmax=0
-        ymin=999999999
-        ymax=0
+    def on_state_changed(self, state: Qt.CheckState):
+        xmin = 999999999
+        xmax = 0
+        ymin = 999999999
+        ymax = 0
         if state == Qt.CheckState.Checked:
             for d in self.data:
-                if xmin>np.min(d.x):xmin=np.min(d.x)
-                if ymin>np.min(d.y):ymin=np.min(d.y)
-                if xmax<np.max(d.x):xmax=np.max(d.x)
-                if ymax<np.max(d.y):ymax=np.max(d.y)
-            dx=xmax-xmin
-            dy=ymax-ymin
-            if dy>dx:
-                d=dy
+                if xmin > np.min(d.x):
+                    xmin = np.min(d.x)
+                if ymin > np.min(d.y):
+                    ymin = np.min(d.y)
+                if xmax < np.max(d.x):
+                    xmax = np.max(d.x)
+                if ymax < np.max(d.y):
+                    ymax = np.max(d.y)
+            dx = xmax-xmin
+            dy = ymax-ymin
+            if dy > dx:
+                d = dy
             else:
-                d=dx
-            if d==0:
-                dd=self.geomMupe.raster[0].rasterUnitsPerPixelY()
+                d = dx
+            if d == 0:
+                dd = self.geomMupe.raster[0].rasterUnitsPerPixelY()
             else:
-                dd=d/200
-          
+                dd = d/200
+
             x = np.arange(xmin, xmin+d, dd)
             y = np.arange(ymin, ymin+d, dd)
             self.X, self.Y = np.meshgrid(x, y)
-            self.Z=self.X.copy()    
-            for yi,ya in enumerate(y): 
-                for xi,xa in enumerate(x):
-                    self.Z[xi][yi]=self.geomMupe.getMum(xa,ya)
-                    self.X[xi][yi]=xa
-                    self.Y[xi][yi]=ya
+            self.Z = self.X.copy()
+            for yi, ya in enumerate(y):
+                for xi, xa in enumerate(x):
+                    self.Z[xi][yi] = self.geomMupe.getMum(xa, ya)
+                    self.X[xi][yi] = xa
+                    self.Y[xi][yi] = ya
         self.setPlotData()
-  
+
     def on_button_demZ_clicked(self):
-        d=self.data[self.spinBoxPart.value()]
-        p1=self.spinBoxStart.value()
-        p2=self.spinBoxEnd.value()
-        xo=range(p1,p2+1)   
-        for n  in xo:
-            x1=self.geomMupe.getValX(d.a,d.b,d.c,n)   
-            y1=self.geomMupe.getValY(d.a,d.b,d.c,n) 
-            dem=  self.geomMupe.getMum(x1,y1)+self.spinBoxDemZ.value()
-            self.geomMupe.setValZ(d.a,d.b,d.c,n,dem)
-        self.data=self.geomMupe.getQseries()
+        d = self.data[self.spinBoxPart.value()]
+        p1 = self.spinBoxStart.value()
+        p2 = self.spinBoxEnd.value()
+        xo = range(p1, p2+1)
+        for n in xo:
+            x1 = self.geomMupe.getValX(d.a, d.b, d.c, n)
+            y1 = self.geomMupe.getValY(d.a, d.b, d.c, n)
+            dem = self.geomMupe.getMum(x1, y1)+self.spinBoxDemZ.value()
+            self.geomMupe.setValZ(d.a, d.b, d.c, n, dem)
+        self.data = self.geomMupe.getQseries()
         self.setPlotData()
 
     def on_button_demM_clicked(self):
-        d=self.data[self.spinBoxPart.value()]
-        p1=self.spinBoxStart.value()
-        p2=self.spinBoxEnd.value()
-        xo=range(p1,p2+1)   
-        for n  in xo:
-            x1=self.geomMupe.getValX(d.a,d.b,d.c,n)   
-            y1=self.geomMupe.getValY(d.a,d.b,d.c,n) 
-            dem=  self.geomMupe.getMum(x1,y1)+self.spinBoxDemM.value()
-            self.geomMupe.setValM(d.a,d.b,d.c,n,dem)
-        self.data=self.geomMupe.getQseries()
+        d = self.data[self.spinBoxPart.value()]
+        p1 = self.spinBoxStart.value()
+        p2 = self.spinBoxEnd.value()
+        xo = range(p1, p2+1)
+        for n in xo:
+            x1 = self.geomMupe.getValX(d.a, d.b, d.c, n)
+            y1 = self.geomMupe.getValY(d.a, d.b, d.c, n)
+            dem = self.geomMupe.getMum(x1, y1)+self.spinBoxDemM.value()
+            self.geomMupe.setValM(d.a, d.b, d.c, n, dem)
+        self.data = self.geomMupe.getQseries()
         self.setPlotData()
 
-    def d3(self): 
+    def d3(self):
         tab = QWidget()
         layout = QVBoxLayout()
         self.canvas = Mpl3DCanvas(self, width=6, height=5, dpi=100)
@@ -366,73 +392,89 @@ class DialogXYZ(QDialog):
         tab.setLayout(layout)
 
         self.setPlotData()
-           # Beschriftungen setzen
+        # Beschriftungen setzen
         self.canvas.axes.set_xlabel("X-Achse")
         self.canvas.axes.set_ylabel("Y-Achse")
         self.canvas.axes.set_zlabel("Z-Achse")
         return tab
-        
 
     def setPlotData(self):
         self.canvas.axes.cla()
 
         for xr in range(len(self.data)):
-            if (len(self.data[xr].x)==1):
-                self.canvas.axes.plot(self.data[xr].x, self.data[xr].y, self.data[xr].z,marker=11, label='Point z '+str(self.data[xr].pos))
-                self.canvas.axes.plot(self.data[xr].x, self.data[xr].y, self.data[xr].m,marker=11, label='Point m '+str(self.data[xr].pos))
+            if (len(self.data[xr].x) == 1):
+                self.canvas.axes.plot(
+                    self.data[xr].x, self.data[xr].y, self.data[xr].z,
+                    marker=11, label='Point z '+str(self.data[xr].pos))
+                self.canvas.axes.plot(
+                    self.data[xr].x, self.data[xr].y, self.data[xr].m,
+                    marker=11, label='Point m '+str(self.data[xr].pos))
             else:
-                self.canvas.axes.plot(self.data[xr].x, self.data[xr].y, self.data[xr].z, label='Line z '+str(self.data[xr].pos))
-                self.canvas.axes.plot(self.data[xr].x, self.data[xr].y, self.data[xr].m, label='Line m '+str(self.data[xr].pos))
-        
+                self.canvas.axes.plot(
+                    self.data[xr].x, self.data[xr].y, self.data[xr].z, label='Line z '+str(self.data[xr].pos))
+                self.canvas.axes.plot(
+                    self.data[xr].x, self.data[xr].y, self.data[xr].m, label='Line m '+str(self.data[xr].pos))
+
         self.rbstart.reset(Qgis.GeometryType.Point)
-        self.rbend.reset(Qgis.GeometryType.Point)    
+        self.rbend.reset(Qgis.GeometryType.Point)
         # Aussehen anpassen (Farbe, Größe und Symboltyp)
 
- 
-         # Punkt hinzufügen (in Kartenkoordinaten)
-        punkt = QgsPointXY(self.data[self.spinBoxPart.value()].x[self.spinBoxStart.value()], self.data[self.spinBoxPart.value()].y[self.spinBoxStart.value()])
+        # Punkt hinzufügen (in Kartenkoordinaten)
+        punkt = QgsPointXY(self.data[self.spinBoxPart.value()].x[self.spinBoxStart.value(
+        )], self.data[self.spinBoxPart.value()].y[self.spinBoxStart.value()])
         self.rbstart.addPoint(punkt)
-         
-        
-        if (len(self.data[xr].x)>1):
-            x=[]
-            y=[]
-            z=[]
-            x.append(self.data[self.spinBoxPart.value()].x[self.spinBoxStart.value()]) 
-            y.append(self.data[self.spinBoxPart.value()].y[self.spinBoxStart.value()]) 
-            z.append(self.data[self.spinBoxPart.value()].z[self.spinBoxStart.value()]) 
-            self.canvas.axes.scatter3D(x,y,z,label='Start',color='r')
 
-            
+        if (len(self.data[xr].x) > 1):
+            x = []
+            y = []
+            z = []
+            x.append(self.data[self.spinBoxPart.value()
+                               ].x[self.spinBoxStart.value()])
+            y.append(self.data[self.spinBoxPart.value()
+                               ].y[self.spinBoxStart.value()])
+            z.append(self.data[self.spinBoxPart.value()
+                               ].z[self.spinBoxStart.value()])
+            self.canvas.axes.scatter3D(x, y, z, label='Start', color='r')
+
             # Punkt hinzufügen (in Kartenkoordinaten)
-            punkt = QgsPointXY(self.data[self.spinBoxPart.value()].x[self.spinBoxEnd.value()], self.data[self.spinBoxPart.value()].y[self.spinBoxEnd.value()])
+            punkt = QgsPointXY(self.data[self.spinBoxPart.value()].x[self.spinBoxEnd.value(
+            )], self.data[self.spinBoxPart.value()].y[self.spinBoxEnd.value()])
             self.rbend.addPoint(punkt)
-                    
-            x=[]
-            y=[]
-            z=[]
-            x.append(self.data[self.spinBoxPart.value()].x[self.spinBoxEnd.value()]) 
-            y.append(self.data[self.spinBoxPart.value()].y[self.spinBoxEnd.value()])
-            z.append(self.data[self.spinBoxPart.value()].z[self.spinBoxEnd.value()]) 
-            self.canvas.axes.scatter3D(x,y,z,label='End',color='b')
-            x=[]
-            y=[]
-            z=[]
-            x.append(self.data[self.spinBoxPart.value()].x[self.spinBoxStart.value()]) 
-            y.append(self.data[self.spinBoxPart.value()].y[self.spinBoxStart.value()])
-            z.append(self.data[self.spinBoxPart.value()].m[self.spinBoxStart.value()]) 
-            self.canvas.axes.scatter3D(x,y,z,color='r') 
-            x=[]
-            y=[]
-            z=[]
-            x.append(self.data[self.spinBoxPart.value()].x[self.spinBoxEnd.value()]) 
-            y.append(self.data[self.spinBoxPart.value()].y[self.spinBoxEnd.value()])
-            z.append(self.data[self.spinBoxPart.value()].m[self.spinBoxEnd.value()])  
-            self.canvas.axes.scatter3D(x,y,z,color='b')   
+
+            x = []
+            y = []
+            z = []
+            x.append(self.data[self.spinBoxPart.value()
+                               ].x[self.spinBoxEnd.value()])
+            y.append(self.data[self.spinBoxPart.value()
+                               ].y[self.spinBoxEnd.value()])
+            z.append(self.data[self.spinBoxPart.value()
+                               ].z[self.spinBoxEnd.value()])
+            self.canvas.axes.scatter3D(x, y, z, label='End', color='b')
+            x = []
+            y = []
+            z = []
+            x.append(self.data[self.spinBoxPart.value()
+                               ].x[self.spinBoxStart.value()])
+            y.append(self.data[self.spinBoxPart.value()
+                               ].y[self.spinBoxStart.value()])
+            z.append(self.data[self.spinBoxPart.value()
+                               ].m[self.spinBoxStart.value()])
+            self.canvas.axes.scatter3D(x, y, z, color='r')
+            x = []
+            y = []
+            z = []
+            x.append(self.data[self.spinBoxPart.value()
+                               ].x[self.spinBoxEnd.value()])
+            y.append(self.data[self.spinBoxPart.value()
+                               ].y[self.spinBoxEnd.value()])
+            z.append(self.data[self.spinBoxPart.value()
+                               ].m[self.spinBoxEnd.value()])
+            self.canvas.axes.scatter3D(x, y, z, color='b')
 
         if self.check_normal.isChecked():
             self.canvas.axes.plot_wireframe(self.X, self.Y, self.Z,  color='grey',
-                       linewidth=0.25, antialiased=False,alpha=0.3)     
+                                            linewidth=0.25, antialiased=False, alpha=0.3)
 
         self.canvas.axes.set_xlabel('X-Achse')
         self.canvas.axes.set_ylabel('Y-Achse')
@@ -440,58 +482,50 @@ class DialogXYZ(QDialog):
         self.canvas.axes.legend()
         self.canvas.draw()
 
-
-
     def addData(self):
-        self.data=self.geomMupe.getQseries()
+        self.data = self.geomMupe.getQseries()
         self.on_spinBox_part(0)
         self.check_normal.setChecked(False)
 
-
-  
-    def on_spinbox_clickedIdStart(self,value):
+    def on_spinbox_clickedIdStart(self, value):
         self.spinBoxStart.setValue(value)
-        p=self.spinBoxPart
-        d=self.data[p.value()]
+        p = self.spinBoxPart
+        d = self.data[p.value()]
 
         self.spinBoxStart.setRange(0, self.spinBoxEnd.value()-1)
-        self.spinBoxEnd.setRange(self.spinBoxStart.value()+1, len(self.geomMupe.array[d.a][d.b][d.c])-1)
-        self.spinBoxZvalS.setValue(self.geomMupe.array[d.a][d.b][d.c][value][2])
+        self.spinBoxEnd.setRange(self.spinBoxStart.value(
+        )+1, len(self.geomMupe.array[d.a][d.b][d.c])-1)
+        self.spinBoxZvalS.setValue(
+            self.geomMupe.array[d.a][d.b][d.c][value][2])
         self.labelLaengeStartBisStop.setText(str(self.getLen()))
         self.setPlotData()
 
-
-  
-
-        
-    def on_spinbox_clickedIdEnd(self,value):
+    def on_spinbox_clickedIdEnd(self, value):
         self.spinBoxEnd.setValue(value)
-        p=self.spinBoxPart
-        d=self.data[p.value()]
-        if len(self.geomMupe.array[d.a][d.b][d.c])==1:
+        p = self.spinBoxPart
+        d = self.data[p.value()]
+        if len(self.geomMupe.array[d.a][d.b][d.c]) == 1:
             return
 
         self.spinBoxStart.setRange(0, self.spinBoxEnd.value()-1)
-        self.spinBoxEnd.setRange(self.spinBoxStart.value()+1, len(self.geomMupe.array[d.a][d.b][d.c])-1)
-        self.spinBoxZvalE.setValue(self.geomMupe.array[d.a][d.b][d.c][value][2])
+        self.spinBoxEnd.setRange(self.spinBoxStart.value(
+        )+1, len(self.geomMupe.array[d.a][d.b][d.c])-1)
+        self.spinBoxZvalE.setValue(
+            self.geomMupe.array[d.a][d.b][d.c][value][2])
         self.labelLaengeStartBisStop.setText(str(self.getLen()))
         self.setPlotData()
 
     def getLen(self):
-        p=self.spinBoxPart
-        d=self.data[p.value()]
-        p1=self.spinBoxStart.value()
-        p2=self.spinBoxEnd.value()
-        x=range(p1,p2,1)
-        lenr=0
+        p = self.spinBoxPart
+        d = self.data[p.value()]
+        p1 = self.spinBoxStart.value()
+        p2 = self.spinBoxEnd.value()
+        x = range(p1, p2, 1)
+        lenr = 0
         for n in x:
-            x1=self.geomMupe.getValX(d.a,d.b,d.c,n)
-            x2=self.geomMupe.getValX(d.a,d.b,d.c,n+1)
-            y1=self.geomMupe.getValY(d.a,d.b,d.c,n)
-            y2=self.geomMupe.getValY(d.a,d.b,d.c,n+1)
+            x1 = self.geomMupe.getValX(d.a, d.b, d.c, n)
+            x2 = self.geomMupe.getValX(d.a, d.b, d.c, n+1)
+            y1 = self.geomMupe.getValY(d.a, d.b, d.c, n)
+            y2 = self.geomMupe.getValY(d.a, d.b, d.c, n+1)
             lenr = lenr + ((x2-x1)**2+(y2-y1)**2)**0.5
-        return round(lenr,3) 
-
-                            
-
-
+        return round(lenr, 3)

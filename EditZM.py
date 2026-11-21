@@ -22,7 +22,7 @@
  ***************************************************************************/
 """
 from qgis.PyQt.QtCore import QLocale, QTranslator, QCoreApplication
-from qgis.core import QgsSettings, QgsVectorLayer ,QgsProject, QgsRasterLayer,QgsLayerTreeLayer
+from qgis.core import Qgis,QgsSettings, QgsVectorLayer ,QgsProject, QgsRasterLayer,QgsLayerTreeLayer
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
 from qgis.utils import iface
@@ -32,7 +32,7 @@ from PyQt6.QtWidgets import QMessageBox
 from .EditZM_dialog import DialogXYZ
 from .GeomMupe import GeomMupe
 import os.path
-from qgis.core import QgsSettings, Qgis
+
 
 class EditZM:
     """QGIS Plugin Implementation."""
@@ -207,7 +207,7 @@ class EditZM:
                         root.insertChildNode(-1, QgsLayerTreeLayer(rlayer))
                         layerRaster.append(rlayer)
                 self.geomMupe=GeomMupe(geom.asWkt(),layerRaster)
-                if self.first_start == True:
+                if self.first_start:
                     self.dlg = DialogXYZ(self.geomMupe)
                     self.first_start = False
                 else:
